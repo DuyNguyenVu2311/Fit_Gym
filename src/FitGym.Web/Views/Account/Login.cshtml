@@ -1,0 +1,44 @@
+@model FitGym.Web.Models.Account.LoginViewModel
+@inject FitGym.Application.Features.Organization.IOrganizationService OrganizationService
+@using FitGym.Application.Security
+@{ Layout = null; var organization = await OrganizationService.GetPublicAsync(); }
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Đăng nhập · @organization.DisplayName</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/operations.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/login-roles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/design-refresh.css" asp-append-version="true" />
+</head>
+<body class="operations-app login-page">
+    <partial name="_Icons" />
+    <main class="login-main">
+        <aside class="login-scene" aria-label="Fit_Gym">
+            <div class="login-scene-brand">@organization.DisplayName</div>
+        </aside>
+        <section class="login-card" aria-labelledby="login-title">
+            <div class="login-brand">@if (organization.HasLogo) { <img class="organization-brand-logo" src="@Url.Action("Logo", "Organization")" alt="Logo @organization.DisplayName" /> } else { <span class="brand-icon"><svg class="icon"><use href="#i-equipment" /></svg></span> }<strong>@organization.DisplayName</strong></div>
+            <h1 id="login-title">Đăng nhập</h1>
+            <form asp-action="Login" asp-controller="Account" method="post">
+                <input asp-for="ReturnUrl" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="login-validation" role="alert"></div>
+                <fieldset class="login-role-choice">
+                    <legend>Vai trò</legend>
+                    <label class="login-role-option"><input type="radio" name="Role" value="@FitGymRoles.NhanVien" checked="@(Model.Role != FitGymRoles.QuanLy)" /><span><strong>Nhân viên</strong></span></label>
+                    <label class="login-role-option"><input type="radio" name="Role" value="@FitGymRoles.QuanLy" checked="@(Model.Role == FitGymRoles.QuanLy)" /><span><strong>Quản lý</strong></span></label>
+                </fieldset>
+                <span asp-validation-for="Role" class="text-danger"></span>
+                <div class="login-field"><label asp-for="UserNameOrEmail" class="form-label"></label><input asp-for="UserNameOrEmail" class="form-control" autocomplete="username" autofocus /><span asp-validation-for="UserNameOrEmail" class="text-danger"></span></div>
+                <div class="login-field"><label asp-for="Password" class="form-label"></label><div class="login-password"><input asp-for="Password" class="form-control" autocomplete="current-password" /><button class="password-toggle" type="button" data-password-toggle aria-controls="Password" aria-pressed="false">Hiện</button></div><span asp-validation-for="Password" class="text-danger"></span></div>
+                <div class="login-options"><label class="login-remember"><input asp-for="RememberMe" class="form-check-input" /><span>Duy trì đăng nhập</span></label><a asp-controller="Account" asp-action="ForgotPassword">Quên mật khẩu?</a></div>
+                <button class="btn btn-fitgym login-submit" type="submit">Đăng nhập<svg class="icon"><use href="#i-arrow" /></svg></button>
+            </form>
+        </section>
+    </main>
+    <script src="~/js/login.js" asp-append-version="true"></script>
+</body>
+</html>

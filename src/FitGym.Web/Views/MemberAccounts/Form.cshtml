@@ -1,0 +1,14 @@
+@model FitGym.Web.Features.Members.MemberAccountViewModel
+@{ ViewData["Title"] = Model.IsReset ? "Đặt lại mật khẩu hội viên" : "Cấp tài khoản ứng dụng"; }
+<div class="page-heading"><div><p class="eyebrow">Tài khoản hội viên</p><h1>@ViewData["Title"]</h1><p class="text-secondary">@Model.MemberName · HV-@Model.MemberId.ToString("D5")</p></div></div>
+<form asp-action="@(Model.IsReset ? "ResetPassword" : "Create")" method="post" class="fit-card form-card narrow-card">
+    <input asp-for="MemberId" type="hidden" />
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+    @if (!Model.IsReset) {
+        <div class="mb-3"><label asp-for="UserName" class="form-label"></label><input asp-for="UserName" class="form-control" autocomplete="off" /><span asp-validation-for="UserName" class="text-danger"></span><p class="form-hint">Dùng chữ không dấu, số, dấu chấm, gạch dưới hoặc gạch ngang. Tài khoản này chỉ dùng trên ứng dụng hội viên.</p></div>
+    }
+    <div class="mb-3"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" autocomplete="new-password" /><p class="form-hint">Tối thiểu 8 ký tự gồm chữ hoa, chữ thường, số và ký tự đặc biệt.</p></div>
+    <div><label asp-for="ConfirmPassword" class="form-label"></label><input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" /></div>
+    <div class="form-actions"><a class="btn btn-outline-dark" asp-controller="Members" asp-action="Details" asp-route-id="@Model.MemberId">Hủy</a><button class="btn btn-fitgym" type="submit">@(Model.IsReset ? "Đặt lại mật khẩu" : "Tạo tài khoản")</button></div>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,25 @@
+@model FitGym.Web.Features.Training.ExerciseFormViewModel
+@{
+    var isEdit = Model.MaBaiTap > 0;
+    ViewData["Title"] = isEdit ? "Cập nhật bài tập" : "Thêm bài tập";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-4"><a asp-action="Exercises" class="text-decoration-none">← Danh mục bài tập</a><h1 class="h3 mt-2">@ViewData["Title"]</h1></div>
+        <form method="post" asp-action="@(isEdit ? "EditExercise" : "CreateExercise")" class="card shadow-sm">
+            <div class="card-body p-4">
+                <input asp-for="MaBaiTap" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <div class="mb-3"><label asp-for="TenBaiTap" class="form-label"></label><input asp-for="TenBaiTap" class="form-control" /><span asp-validation-for="TenBaiTap" class="text-danger"></span></div>
+                <div class="mb-3"><label asp-for="NhomCoChinh" class="form-label"></label><input asp-for="NhomCoChinh" class="form-control" /><span asp-validation-for="NhomCoChinh" class="text-danger"></span></div>
+                <div class="mb-3"><label asp-for="MoTa" class="form-label"></label><textarea asp-for="MoTa" class="form-control" rows="5"></textarea><span asp-validation-for="MoTa" class="text-danger"></span></div>
+                <div class="mb-3"><label asp-for="LinkVideo" class="form-label"></label><input asp-for="LinkVideo" class="form-control" /><span asp-validation-for="LinkVideo" class="text-danger"></span></div>
+                <div class="form-check"><input asp-for="HoTroAI" class="form-check-input" /><label asp-for="HoTroAI" class="form-check-label"></label></div>
+            </div>
+            <div class="card-footer bg-white p-3 text-end"><button class="btn btn-fitgym" type="submit">Lưu bài tập</button></div>
+        </form>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

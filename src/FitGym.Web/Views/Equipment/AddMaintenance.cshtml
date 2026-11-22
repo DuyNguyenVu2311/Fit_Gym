@@ -1,0 +1,7 @@
+@model FitGym.Web.Features.Equipment.MaintenanceFormViewModel
+@{ ViewData["Title"] = "Ghi nhận bảo trì"; }
+<div class="work-page">
+<div class="page-heading compact work-heading"><div><p class="eyebrow">Bảo trì thiết bị</p><h1>@Model.TenThietBi</h1></div></div><form asp-action="AddMaintenance" method="post" class="fit-card form-card work-form-card"><input asp-for="MaThietBi" type="hidden" /><input asp-for="TenThietBi" type="hidden" /><div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div><div class="form-grid"><div><label asp-for="NgayBaoTri" class="form-label"></label><input asp-for="NgayBaoTri" class="form-control" /><span asp-validation-for="NgayBaoTri" class="text-danger"></span></div><div><label asp-for="ChiPhi" class="form-label"></label><input asp-for="ChiPhi" class="form-control" /><span asp-validation-for="ChiPhi" class="text-danger"></span></div><div class="full-width"><label asp-for="MoTa" class="form-label"></label><textarea asp-for="MoTa" class="form-control" rows="4"></textarea><span asp-validation-for="MoTa" class="text-danger"></span></div></div><div class="form-actions"><a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.MaThietBi">Hủy</a><button class="btn btn-fitgym">Ghi nhận bảo trì</button></div></form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+

@@ -1,0 +1,87 @@
+@inject FitGym.Application.Features.Organization.IOrganizationService OrganizationService
+@{
+    var organization = await OrganizationService.GetPublicAsync();
+    var current = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Home";
+    var manager = User.IsInRole("QuanLy");
+    var userName = User.Identity?.Name ?? "Tài khoản";
+    var initials = userName.Length > 1 ? userName[..2].ToUpperInvariant() : userName.ToUpperInvariant();
+    var links = new[] {
+        ("Home", "Index", "dashboard", "Tổng quan", "Vận hành"),
+        ("CheckIns", "Index", "check", "Lượt vào phòng", "Vận hành"),
+        ("Members", "Index", "users", "Hội viên", "Hội viên và dịch vụ"),
+        ("Packages", "Index", "tag", "Gói tập", "Hội viên và dịch vụ"),
+        ("Registrations", "Index", "receipt", "Đăng ký & gia hạn", "Hội viên và dịch vụ"),
+        ("Payments", "Index", "receipt", "Thanh toán gói tập", "Hội viên và dịch vụ"),
+        ("Goods", "Index", "box", "Hàng hóa & kho", "Cơ sở vật chất"),
+        ("Equipment", "Index", "equipment", "Thiết bị & bảo trì", "Cơ sở vật chất")
+    };
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] · @organization.DisplayName</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/operations.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/design-refresh.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/week6.css" asp-append-version="true" />
+</head>
+<body class="operations-app">
+    <partial name="_Icons" />
+    <button class="sidebar-scrim" type="button" aria-label="Đóng điều hướng" data-sidebar-toggle></button>
+    <aside class="ops-sidebar" aria-label="Điều hướng chính">
+        <a class="ops-brand" asp-controller="Home" asp-action="Index" title="@organization.DisplayName">
+            @if (organization.HasLogo) { <img class="organization-brand-logo" src="@Url.Action("Logo", "Organization")" alt="Logo @organization.DisplayName" /> }
+            else { <span class="brand-icon"><svg class="icon"><use href="#i-equipment" /></svg></span> }
+            <span><strong>@organization.DisplayName</strong></span>
+        </a>
+        @if (!organization.IsConfigured || organization.SiteName != organization.DisplayName)
+        {
+            <div class="ops-scope">@(organization.IsConfigured ? organization.SiteName : "Chưa thiết lập đơn vị")</div>
+        }
+        <nav class="ops-nav">
+            @foreach (var group in links.GroupBy(x => x.Item5))
+            {
+                <div class="ops-nav-caption">@group.Key</div>
+                @foreach (var item in group)
+                {
+                    var active = current == item.Item1 || (item.Item1 == "Goods" && current == "WarehouseDocuments");
+                    <a class="ops-nav-link @(active ? "active" : "")" aria-current="@(active ? "page" : null)" asp-controller="@item.Item1" asp-action="@item.Item2"><svg class="icon"><use href="#i-@item.Item3" /></svg><span>@item.Item4</span></a>
+                }
+            }
+            <div class="ops-nav-caption">Nội dung tập luyện</div>
+            @{
+                var trainingAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+                var exercisePage = current == "Training" && trainingAction.Contains("Exercise");
+                var profilePage = current == "Training" && !exercisePage;
+            }
+            <a class="ops-nav-link @(profilePage ? "active" : "")" aria-current="@(profilePage ? "page" : null)" asp-controller="Training" asp-action="Profiles"><svg class="icon"><use href="#i-activity" /></svg><span>Hồ sơ mục tiêu</span></a>
+            <a class="ops-nav-link @(exercisePage ? "active" : "")" aria-current="@(exercisePage ? "page" : null)" asp-controller="Training" asp-action="Exercises"><svg class="icon"><use href="#i-equipment" /></svg><span>Danh mục bài tập</span></a>
+            @if (manager)
+            {
+                <div class="ops-nav-caption">Quản trị hệ thống</div>
+                <a class="ops-nav-link @(current == "Reports" ? "active" : "")" asp-controller="Reports" asp-action="Index"><svg class="icon"><use href="#i-chart" /></svg><span>Báo cáo vận hành</span></a>
+                <a class="ops-nav-link @(current == "Accounts" ? "active" : "")" asp-controller="Accounts" asp-action="Index"><svg class="icon"><use href="#i-settings" /></svg><span>Tài khoản & nhân viên</span></a>
+                <a class="ops-nav-link @(current == "Organization" ? "active" : "")" asp-controller="Organization" asp-action="Index"><svg class="icon"><use href="#i-info" /></svg><span>Thông tin đơn vị</span></a>
+            }
+        </nav>
+        <div class="ops-sidebar-bottom">
+            <div class="ops-user"><span class="avatar">@initials</span><span><strong>@userName</strong><small><b>@(manager ? "Quản lý" : "Nhân viên")</b></small></span></div>
+            <form asp-controller="Account" asp-action="Logout" method="post"><button class="ops-logout" type="submit"><svg class="icon"><use href="#i-logout" /></svg>Đăng xuất</button></form>
+        </div>
+    </aside>
+    <div class="ops-workspace">
+        <header class="ops-topbar">
+            <div class="ops-breadcrumb"><button class="icon-button sidebar-toggle" type="button" aria-label="Mở hoặc thu gọn điều hướng" aria-expanded="false" data-sidebar-toggle><svg class="icon"><use href="#i-menu" /></svg></button><strong>@organization.DisplayName</strong><span class="breadcrumb-slash">/</span><span>@ViewData["Title"]</span></div>
+            <div class="ops-topbar-right"><span class="topbar-date"><svg class="icon"><use href="#i-calendar" /></svg>@DateTime.Today.ToString("dd/MM/yyyy")</span><span class="status-pill role">@(manager ? "Quản lý" : "Nhân viên")</span><span class="topbar-avatar">@initials</span></div>
+        </header>
+        <main class="ops-main" id="main-content">@RenderBody()</main>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/operations.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

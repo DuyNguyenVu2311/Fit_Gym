@@ -1,0 +1,58 @@
+@model FitGym.Web.Features.Accounts.CreateAccountViewModel
+@using FitGym.Application.Security
+@{
+    ViewData["Title"] = "Tạo tài khoản";
+}
+
+<div class="page-heading compact">
+    <div>
+        <h1>Tạo tài khoản nhân viên</h1>
+    </div>
+</div>
+
+<form asp-action="Create" method="post" class="fit-card form-card">
+    <div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div>
+    <div class="form-grid">
+        <div>
+            <label asp-for="HoTen" class="form-label"></label>
+            <input asp-for="HoTen" class="form-control" autocomplete="name" />
+            <span asp-validation-for="HoTen" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="ChucVu" class="form-label"></label>
+            <input asp-for="ChucVu" class="form-control" />
+            <span asp-validation-for="ChucVu" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="NgayVaoLam" class="form-label"></label>
+            <input asp-for="NgayVaoLam" class="form-control" />
+            <span asp-validation-for="NgayVaoLam" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="Role" class="form-label"></label>
+            <select asp-for="Role" class="form-select">
+                <option value="@FitGymRoles.NhanVien">Nhân viên</option>
+                <option value="@FitGymRoles.QuanLy">Quản lý</option>
+            </select>
+            <span asp-validation-for="Role" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="UserName" class="form-label"></label>
+            <input asp-for="UserName" class="form-control" autocomplete="username" />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+        <div class="full-width">
+            <label asp-for="Password" class="form-label"></label>
+            <input asp-for="Password" class="form-control" autocomplete="new-password" />
+            <div class="form-hint">Tối thiểu 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.</div>
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-actions">
+        <a class="btn btn-outline-secondary" asp-action="Index">Hủy</a>
+        <button class="btn btn-fitgym" type="submit">Tạo tài khoản</button>
+    </div>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+

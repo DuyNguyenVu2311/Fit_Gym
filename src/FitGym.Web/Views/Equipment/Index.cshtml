@@ -1,0 +1,60 @@
+@model FitGym.Web.Features.Equipment.EquipmentIndexViewModel
+@using FitGym.Application.Features.Equipment
+@{ ViewData["Title"] = "Thiết bị"; }
+
+<div class="work-page">
+<div class="page-heading work-heading">
+    <div>
+        <h1>Thiết bị</h1>
+    </div>
+    @if (User.IsInRole("QuanLy"))
+    {
+        <a class="btn btn-fitgym" asp-action="Create">Thêm thiết bị</a>
+    }
+</div>
+
+<section class="fit-card work-panel">
+    <form method="get" class="account-toolbar work-toolbar">
+        <div class="work-field work-search-field"><label class="form-label" for="equipment-search">Thiết bị</label><input id="equipment-search" name="search" value="@Model.Search" class="form-control" placeholder="Tên hoặc phân loại" /></div>
+        <div class="work-field work-select-field"><label class="form-label" for="equipment-status">Trạng thái</label><select id="equipment-status" name="status" class="form-select">
+            <option value="">Tất cả trạng thái</option>
+            <option value="@EquipmentStatuses.Active" selected="@(Model.Status == EquipmentStatuses.Active)">Hoạt động</option>
+            <option value="@EquipmentStatuses.UnderMaintenance" selected="@(Model.Status == EquipmentStatuses.UnderMaintenance)">Đang bảo trì</option>
+            <option value="@EquipmentStatuses.Retired" selected="@(Model.Status == EquipmentStatuses.Retired)">Ngừng sử dụng</option>
+        </select></div>
+        <button class="btn btn-outline-dark work-filter-button" type="submit">Lọc</button>
+    </form>
+    <div class="collection-header work-list-header"><strong>Danh sách thiết bị</strong><span>@Model.Equipment.Count thiết bị</span></div>
+    @if (Model.Equipment.Count == 0)
+    {
+        <div class="empty-state"><h2>Không có thiết bị phù hợp</h2></div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table work-table align-middle mb-0">
+                <thead><tr><th>Thiết bị</th><th>Phân loại</th><th>Ngày mua</th><th>Bảo trì</th><th>Trạng thái</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var item in Model.Equipment)
+                {
+                    <tr>
+                        <td><strong>@item.TenThietBi</strong><div class="work-code work-code-muted">TB-@item.MaThietBi.ToString("D5")</div></td>
+                        <td>@item.PhanLoai</td>
+                        <td>@item.NgayMua.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @item.SoLanBaoTri lần
+                            @if (item.LanBaoTriGanNhat.HasValue)
+                            {
+                                <div class="small text-secondary">Gần nhất @item.LanBaoTriGanNhat.GetValueOrDefault().ToString("dd/MM/yyyy")</div>
+                            }
+                        </td>
+                        <td><span class="status-pill @(item.TrangThai == EquipmentStatuses.Active ? "active" : item.TrangThai == EquipmentStatuses.Retired ? "inactive" : "neutral")">@(item.TrangThai == EquipmentStatuses.Active ? "Hoạt động" : item.TrangThai == EquipmentStatuses.UnderMaintenance ? "Đang bảo trì" : "Ngừng sử dụng")</span></td>
+                        <td class="text-end"><a class="btn btn-sm btn-outline-dark" asp-action="Details" asp-route-id="@item.MaThietBi">Chi tiết</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+</div>

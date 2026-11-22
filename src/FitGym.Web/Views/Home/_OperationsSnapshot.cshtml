@@ -1,0 +1,95 @@
+@model FitGym.Web.Models.OperationsDashboardViewModel
+@using FitGym.Application.Features.CheckIns
+@inject FitGym.Application.Features.Organization.IOrganizationService OrganizationService
+@{
+    var organization = await OrganizationService.GetPublicAsync();
+    ViewData["Title"] = "Tổng quan vận hành";
+    var failedCount = Model.FaceFailures;
+    var max = Math.Max(1, Model.Hourly.Max());
+    var peak = Array.IndexOf(Model.Hourly, Model.Hourly.Max());
+}
+<section data-dashboard-snapshot data-date="@Model.Date.ToString("yyyy-MM-dd")" data-live-day="@Model.TrackToday.ToString().ToLowerInvariant()">
+@if (Model.EmployeeProfileMissing)
+{
+    <div class="alert alert-warning"><strong>Tài khoản chưa có hồ sơ nhân viên.</strong> Cần hoàn thiện hồ sơ trước khi lập giao dịch tại quầy.
+    @if (User.IsInRole("QuanLy")) { <a asp-controller="Accounts" asp-action="Edit" asp-route-id="@Model.CurrentAccountId">Hoàn thiện hồ sơ của tôi</a> }
+    else { <span>Vui lòng liên hệ quản lý.</span> }</div>
+}
+@if (!organization.IsConfigured)
+{
+    <div class="alert alert-info d-flex flex-wrap justify-content-between align-items-center gap-2"><span>Chưa thiết lập thông tin đơn vị sử dụng và cơ sở đầu tiên.</span>@if (User.IsInRole("QuanLy")) { <a class="btn btn-fitgym" asp-controller="Organization" asp-action="Index">Thiết lập phòng gym</a> } else { <span>Vui lòng liên hệ quản lý.</span> }</div>
+}
+<div class="dashboard-heading">
+    <div><h1>Tổng quan vận hành</h1></div>
+    <div class="dashboard-actions">
+        <a class="btn btn-fitgym" asp-controller="Registrations" asp-action="Create"><svg class="icon"><use href="#i-plus" /></svg>Đăng ký hội viên</a>
+        <a class="btn btn-outline-dark" asp-controller="Registrations" asp-action="Index"><svg class="icon"><use href="#i-receipt" /></svg>Đăng ký & gia hạn</a>
+    </div>
+</div>
+<div class="metrics-grid metrics-grid-three">
+    <section class="metric-card"><div class="metric-label">Lượt vào phòng</div><div class="metric-main"><strong class="metric-value">@Model.Total</strong><span class="metric-context">@Model.Date.ToString("dd/MM")</span></div></section>
+    <section class="metric-card"><div class="metric-label">Gói sắp hết hạn</div><div class="metric-main"><strong class="metric-value">@Model.Expiring</strong><span class="metric-context tone-warning">≤ 3 ngày</span></div></section>
+    <section class="metric-card"><div class="metric-label">Nhận diện thất bại</div><div class="metric-main"><strong class="metric-value tone-danger">@failedCount</strong><span class="metric-context">Trong ngày</span></div></section>
+</div>
+<div class="dashboard-grid">
+    <div class="dashboard-left">
+        <section class="fit-card">
+            <div class="panel-heading"><div><h2>Lượt vào theo giờ</h2></div><form method="get" class="date-controls"><label class="visually-hidden" for="dashboard-date">Ngày thống kê</label><input class="form-control" id="dashboard-date" type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" /><button class="btn btn-outline-dark" type="submit">Xem</button><a class="btn btn-outline-dark" asp-action="Index">Hôm nay</a></form></div>
+            @if (Model.Total == 0)
+            {
+                <div class="chart-empty" role="status">Chưa ghi nhận lượt vào trong ngày đã chọn</div>
+            }
+            else
+            {
+            <div class="chart-panel">
+                <div class="chart-summary"><span>Cao điểm ghi nhận: @peak.ToString("D2"):00 – @((peak + 1).ToString("D2")):00</span><span>Tổng: <strong>@Model.Total lượt</strong></span></div>
+                <svg class="hourly-chart" viewBox="0 0 720 220" role="img" aria-label="Biểu đồ lượt vào theo từng giờ, tổng @Model.Total lượt">
+                    @for (var grid = 0; grid <= 4; grid++)
+                    {
+                        var y = 180 - grid * 40;
+                        <line x1="28" x2="708" y1="@y" y2="@y" stroke="#e4e4e0" stroke-dasharray="3 4" />
+                        <g><text x="18" y="@(y + 4)" text-anchor="end" fill="#777b78" font-size="9">@Math.Ceiling(max * grid / 4.0)</text></g>
+                    }
+                    @for (var hour = 0; hour < 24; hour++)
+                    {
+                        var x = 35 + hour * 28;
+                        var barHeight = (int)Math.Round(Model.Hourly[hour] * 150.0 / max);
+                        <rect x="@x" y="@(180 - barHeight)" width="17" height="@barHeight" rx="2" fill="@(hour == peak ? "#A7441C" : "#d7d8d3")"><title>@hour.ToString("D2"):00 · @Model.Hourly[hour] lượt</title></rect>
+                        @if (Model.Hourly[hour] > 0) { <g><text x="@(x + 8)" y="@(173 - barHeight)" text-anchor="middle" font-size="9" fill="#5b615c">@Model.Hourly[hour]</text></g> }
+                        @if (hour % 2 == 0) { <g><text x="@(x + 8)" y="204" text-anchor="middle" font-size="9" fill="#777b78">@hour.ToString("D2"):00</text></g> }
+                    }
+                </svg>
+            </div>
+            }
+        </section>
+        <section class="fit-card">
+            <div class="panel-heading"><h2>Lượt vào gần nhất</h2><a asp-controller="CheckIns" asp-action="Index" asp-route-date="@Model.Date.ToString("yyyy-MM-dd")" class="small text-decoration-none">Xem tất cả →</a></div>
+            <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Thời gian</th><th>Hội viên</th><th>Mã đăng ký</th><th>Phương thức</th><th>Gói tập</th><th>Trạng thái</th></tr></thead><tbody>
+            @if (Model.Recent.Count == 0)
+            {
+                <tr><td colspan="6"><div class="empty-state"><h2>Chưa có lượt vào</h2></div></td></tr>
+            }
+            @foreach (var item in Model.Recent)
+            {
+                <tr><td>@item.ThoiGianVao.ToString("HH:mm:ss")</td><td><strong>@item.HoTen</strong></td><td>DK-@item.MaDangKy.ToString("D6")</td><td>@(item.PhuongThuc == CheckInMethods.Face ? "Khuôn mặt" : "Thủ công")</td><td>@item.TenGoi</td><td><span class="status-pill active">Đã vào</span></td></tr>
+            }
+            </tbody></table></div>
+        </section>
+    </div>
+    <div class="dashboard-right">
+        <section class="fit-card">
+            <div class="panel-heading"><div><h2>Nhận diện thất bại gần đây</h2></div><span class="status-pill inactive">@failedCount lượt</span></div>
+            <div class="queue-content">
+                @if (Model.Failed.Count == 0)
+                {
+                    <div class="queue-empty"><svg class="icon"><use href="#i-success" /></svg><strong>Chưa có lượt nhận diện thất bại</strong></div>
+                }
+                @foreach (var item in Model.Failed)
+                {
+                    <article class="queue-entry"><div class="queue-meta"><span class="status-pill inactive">Nhận diện thất bại</span><time>@item.ThoiGianVao.ToString("HH:mm:ss")</time></div><h3>@item.HoTen</h3><p>Đăng ký DK-@item.MaDangKy.ToString("D6") · @item.TenGoi</p><a class="btn btn-outline-dark" asp-controller="Members" asp-action="Index">Tra cứu hội viên</a></article>
+                }
+            </div>
+        </section>
+    </div>
+</div>
+</section>

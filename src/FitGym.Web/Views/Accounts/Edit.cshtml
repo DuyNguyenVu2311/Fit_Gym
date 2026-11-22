@@ -1,0 +1,60 @@
+@model FitGym.Web.Features.Accounts.EditAccountViewModel
+@using FitGym.Application.Security
+@using FitGym.Web.Features.Accounts
+@{
+    ViewData["Title"] = "Chỉnh sửa tài khoản";
+}
+
+<div class="page-heading compact">
+    <div>
+        <h1>Chỉnh sửa @Model.UserName</h1>
+    </div>
+</div>
+
+<form asp-action="Edit" method="post" class="fit-card form-card">
+    <input asp-for="UserId" type="hidden" />
+    <input asp-for="UserName" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div>
+    <div class="form-grid">
+        <div>
+            <label class="form-label">Tên đăng nhập</label>
+            <input value="@Model.UserName" class="form-control" disabled />
+        </div>
+        <div>
+            <label asp-for="HoTen" class="form-label"></label>
+            <input asp-for="HoTen" class="form-control" />
+            <span asp-validation-for="HoTen" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="ChucVu" class="form-label"></label>
+            <input asp-for="ChucVu" class="form-control" />
+            <span asp-validation-for="ChucVu" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="NgayVaoLam" class="form-label"></label>
+            <input asp-for="NgayVaoLam" class="form-control" />
+            <span asp-validation-for="NgayVaoLam" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="Role" class="form-label"></label>
+            <select asp-for="Role" class="form-select">
+                <option value="@FitGymRoles.NhanVien">Nhân viên</option>
+                <option value="@FitGymRoles.QuanLy">Quản lý</option>
+            </select>
+        </div>
+        <div>
+            <label asp-for="TrangThai" class="form-label"></label>
+            <select asp-for="TrangThai" class="form-select">
+                <option value="@AccountAdministrationService.ActiveStatus">Đang hoạt động</option>
+                <option value="@AccountAdministrationService.InactiveStatus">Ngừng hoạt động</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-actions">
+        <a class="btn btn-outline-secondary" asp-action="Index">Hủy</a>
+        <button class="btn btn-fitgym" type="submit">Lưu thay đổi</button>
+    </div>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+

@@ -1,0 +1,14 @@
+@model FitGym.Web.Features.Members.MemberFormViewModel
+@{ ViewData["Title"] = "Thêm hội viên"; }
+<div class="page-heading compact"><div><h1>Thêm hội viên</h1></div></div>
+<form asp-action="Create" method="post" class="fit-card form-card">
+    <input asp-for="ReturnToRegistration" type="hidden" />
+    <partial name="_Form" model="Model" />
+    <div class="form-actions">
+        @if (Model.ReturnToRegistration) { <a class="btn btn-outline-secondary" asp-controller="Registrations" asp-action="Create">Quay lại đăng ký</a> }
+        else { <a class="btn btn-outline-secondary" asp-action="Index">Hủy</a> }
+        <button class="btn btn-fitgym" type="submit">@(Model.ReturnToRegistration ? "Lưu & chọn gói tập" : "Lưu hội viên")</button>
+    </div>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+

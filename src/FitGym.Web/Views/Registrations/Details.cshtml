@@ -1,0 +1,60 @@
+@model FitGym.Application.Features.Registrations.RegistrationDetail
+@using FitGym.Application.Features.Registrations
+@inject FitGym.Application.Features.Organization.IOrganizationService OrganizationService
+@{
+    var organization = await OrganizationService.GetAsync();
+    ViewData["Title"] = "Chi tiết đăng ký";
+    var paid = Model.TrangThaiThanhToan == PaymentStatuses.Succeeded;
+    var validity = RegistrationValidity.Evaluate(Model.TrangThai, Model.NgayBatDau, Model.NgayKetThuc, paid, DateTime.Today);
+    var registrationLabel = validity switch
+    {
+        RegistrationValidity.Usable => "Còn hiệu lực",
+        RegistrationValidity.NotStarted => "Chưa bắt đầu",
+        RegistrationValidity.Expired => "Hết hạn",
+        RegistrationValidity.PaymentUnconfirmed => "Chưa có hiệu lực",
+        RegistrationValidity.Cancelled => "Đã hủy",
+        _ => "Chưa xác định"
+    };
+    var paymentLabel = Model.TrangThaiThanhToan switch
+    {
+        PaymentStatuses.Succeeded => "Đã thanh toán",
+        PaymentStatuses.Pending => "Chờ thanh toán",
+        PaymentStatuses.Failed => "Thanh toán thất bại",
+        _ => "Chưa có kết quả thanh toán"
+    };
+}
+<link rel="stylesheet" href="~/css/registration.css" asp-append-version="true" />
+<div class="work-page">
+<div class="page-heading work-heading">
+    <div><p class="eyebrow work-code">DK-@Model.MaDangKy.ToString("D6")</p><h1>@Model.HoTenHoiVien</h1><p class="text-secondary mb-0">@Model.SoDienThoai · @Model.TenGoi</p></div>
+    <div class="d-flex gap-2"><a class="btn btn-outline-secondary" asp-action="Index">Danh sách</a>@if (Model.TrangThai == RegistrationStatuses.Active && paid) { <a class="btn btn-fitgym" asp-action="Renew" asp-route-id="@Model.MaDangKy">Gia hạn</a> }</div>
+</div>
+@if (TempData["Success"] is string success) { <div class="alert alert-success">@success</div> }
+<div class="fit-card result-heading work-result-heading"><svg class="icon"><use href="@(paid ? "#i-success" : "#i-clock")" /></svg><div><h2>@paymentLabel</h2></div><span class="status-pill @(validity == RegistrationValidity.Usable ? "active" : "neutral")">@registrationLabel</span></div>
+<section class="fit-card detail-card work-detail-card">
+    @if (organization is not null) { <div class="mb-4"><h2 class="section-title">@organization.OrganizationName</h2><p class="text-secondary mb-1">@organization.SiteName · @organization.SiteAddress</p>@if (!string.IsNullOrEmpty(organization.Phone)) { <p class="text-secondary mb-0">Liên hệ: @organization.Phone</p> }</div> }
+    <div class="detail-grid">
+        <div><span>Ngày bắt đầu</span><strong>@Model.NgayBatDau.ToString("dd/MM/yyyy")</strong></div>
+        <div><span>Ngày kết thúc</span><strong>@Model.NgayKetThuc.ToString("dd/MM/yyyy")</strong></div>
+        <div><span>Tổng tiền</span><strong class="work-money">@VndMoney.Format(Model.TongTien)</strong></div>
+        <div><span>Trạng thái đăng ký</span><strong>@registrationLabel</strong></div>
+        <div><span>Phương thức</span><strong>@(Model.PhuongThucThanhToan == PaymentMethods.Cash ? "Tiền mặt tại quầy" : Model.PhuongThucThanhToan == PaymentMethods.Qr ? "QR" : "Chưa ghi nhận")</strong></div>
+        <div><span>Thanh toán</span><strong>@paymentLabel</strong></div>
+        @if (Model.MaDangKyGoc.HasValue) { <div><span>Gia hạn từ</span><strong><a asp-action="Details" asp-route-id="@Model.MaDangKyGoc.Value">DK-@Model.MaDangKyGoc.Value.ToString("D6")</a></strong></div> }
+        <div><span>Đồng ý sinh trắc học</span><strong>@(Model.DaDongYSinhTracHoc ? "Đã ghi nhận" : "Chưa có")</strong></div>
+        <div><span>Dữ liệu khuôn mặt</span><strong>@(Model.CoDuLieuKhuonMat ? "Đã thu nhận" : "Chưa thu nhận")</strong></div>
+        @if (!string.IsNullOrWhiteSpace(Model.MaYeuCauThanhToan)) { <div class="full-width"><span>Mã yêu cầu thanh toán</span><strong class="font-monospace">@Model.MaYeuCauThanhToan</strong></div> }
+    </div>
+    @if (Model.PhuongThucThanhToan == PaymentMethods.Qr && Model.TrangThaiThanhToan == PaymentStatuses.Pending)
+    {
+        <div class="alert alert-info mt-4 mb-0">Yêu cầu đang chờ thanh toán; gói tập chưa có hiệu lực. @if (Model.MaThanhToan.HasValue) { <a asp-controller="Payments" asp-action="Details" asp-route-id="@Model.MaThanhToan.Value">Xem và xác nhận thanh toán</a> }</div>
+    }
+    @if (Model.DaDongYSinhTracHoc && !Model.CoDuLieuKhuonMat)
+    {
+        <div class="alert alert-warning mt-3 mb-0">Chưa có dữ liệu khuôn mặt. Cần bổ sung trước khi hội viên sử dụng máy vào cửa.</div>
+    }
+    <div class="receipt-actions"><button type="button" class="btn btn-outline-dark" data-print-registration><svg class="icon"><use href="#i-receipt" /></svg>@(paid ? "In thông tin & xác nhận thanh toán" : "In thông tin yêu cầu")</button><a class="btn btn-outline-dark" asp-controller="Members" asp-action="Details" asp-route-id="@Model.MaHoiVien">Hồ sơ hội viên</a><a class="btn btn-fitgym" asp-action="Create">Đăng ký tiếp theo</a></div>
+</section>
+</div>
+@section Scripts { <script src="~/js/registration-result.js" asp-append-version="true"></script> }
+

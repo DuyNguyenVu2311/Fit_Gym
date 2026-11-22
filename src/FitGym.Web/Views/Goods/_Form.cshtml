@@ -1,0 +1,5 @@
+@model FitGym.Web.Features.Warehouse.GoodsFormViewModel
+@using FitGym.Application.Features.Warehouse
+<div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div>
+<div class="form-grid"><div><label asp-for="TenHang" class="form-label"></label><input asp-for="TenHang" class="form-control" /><span asp-validation-for="TenHang" class="text-danger"></span></div><div><label asp-for="DonViTinh" class="form-label"></label><input asp-for="DonViTinh" class="form-control" /><span asp-validation-for="DonViTinh" class="text-danger"></span></div><div><label asp-for="GiaBan" class="form-label"></label><input asp-for="GiaBan" class="form-control" /><span asp-validation-for="GiaBan" class="text-danger"></span></div>@if (Model.MaHangHoa > 0) { <div><label asp-for="TrangThai" class="form-label"></label><select asp-for="TrangThai" class="form-select"><option value="@GoodsStatuses.Active">Đang hoạt động</option><option value="@GoodsStatuses.Inactive">Ngừng hoạt động</option></select></div> }</div>
+

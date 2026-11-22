@@ -1,0 +1,50 @@
+@model FitGym.Web.Features.CheckIns.CheckInIndexViewModel
+@using FitGym.Application.Features.CheckIns
+@{
+    ViewData["Title"] = "Lượt vào phòng";
+    var entries = Model.History.Where(x => x.TrangThai == CheckInStatuses.Succeeded).ToList();
+}
+<div class="work-page">
+    <div class="page-heading work-heading">
+        <div>
+            <h1>Lượt vào phòng</h1>
+            <p>@Model.Date.ToString("dd/MM/yyyy")</p>
+        </div>
+        <div class="work-count"><strong>@entries.Count</strong><span>lượt vào</span></div>
+    </div>
+    <section class="fit-card work-panel">
+        <form method="get" class="account-toolbar work-toolbar">
+            <div class="work-field work-date-field">
+                <label class="form-label" for="entry-date">Ngày</label>
+                <input id="entry-date" type="date" name="date" value="@Model.Date.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+            <div class="work-field work-search-field">
+                <label class="form-label" for="entry-search">Hội viên</label>
+                <input id="entry-search" name="search" value="@Model.Search" class="form-control" placeholder="Tên hoặc số điện thoại" />
+            </div>
+            <button class="btn btn-outline-dark work-filter-button" type="submit">Xem lượt vào</button>
+        </form>
+        <div class="collection-header work-list-header"><strong>Nhật ký vào phòng</strong><span>@entries.Count kết quả</span></div>
+        <div class="table-responsive">
+            <table class="table work-table align-middle mb-0">
+                <thead><tr><th>Giờ vào</th><th>Hội viên</th><th>Đăng ký</th><th>Gói tập</th><th>Ghi nhận</th></tr></thead>
+                <tbody>
+                @if (entries.Count == 0)
+                {
+                    <tr><td colspan="5"><div class="empty-state"><h2>Chưa có lượt vào trong ngày này</h2></div></td></tr>
+                }
+                @foreach (var item in entries)
+                {
+                    <tr>
+                        <td class="work-time">@item.ThoiGianVao.ToString("HH:mm:ss")</td>
+                        <td><strong>@item.HoTen</strong></td>
+                        <td><a class="work-code" asp-controller="Registrations" asp-action="Details" asp-route-id="@item.MaDangKy">DK-@item.MaDangKy.ToString("D6")</a></td>
+                        <td>@item.TenGoi</td>
+                        <td>@(item.PhuongThuc == CheckInMethods.Face ? "Khuôn mặt" : "Nhân viên hỗ trợ")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,26 @@
+@model FitGym.Web.Features.Reports.OperationsReport
+@using System.Globalization
+@{ ViewData["Title"] = "Báo cáo vận hành"; }
+
+<div class="page-heading">
+    <div><h1>Báo cáo vận hành</h1></div>
+</div>
+<section class="collection-toolbar">
+    <form method="get" class="account-toolbar">
+        <div><label for="from" class="form-label">Từ ngày</label><input id="from" type="date" name="from" value="@Model.From.ToString("yyyy-MM-dd")" class="form-control date-filter" /></div>
+        <div><label for="to" class="form-label">Đến ngày</label><input id="to" type="date" name="to" value="@Model.To.ToString("yyyy-MM-dd")" class="form-control date-filter" /></div>
+        <div class="align-self-end"><button class="btn btn-outline-dark" type="submit">Xem báo cáo</button></div>
+    </form>
+</section>
+<div class="metrics-grid metrics-grid-three">
+    <div class="metric-card" data-revenue="@Model.Revenue.ToString("F2", CultureInfo.InvariantCulture)"><div class="metric-label">Doanh thu đã xác nhận</div><div class="metric-main"><strong class="metric-value">@VndMoney.Format(Model.Revenue)</strong></div><div class="metric-note">@Model.PaidTransactions giao dịch thành công</div></div>
+    <div class="metric-card"><div class="metric-label">Yêu cầu QR chờ</div><div class="metric-main"><strong class="metric-value">@Model.PendingQrRequests</strong></div></div>
+    <div class="metric-card"><div class="metric-label">Lượt vào phòng</div><div class="metric-main"><strong class="metric-value">@Model.SuccessfulCheckIns</strong></div></div>
+</div>
+<section class="fit-card">
+    <div class="collection-header"><strong>Doanh thu theo gói tập</strong><span class="text-secondary">@Model.From.ToString("dd/MM/yyyy") – @Model.To.ToString("dd/MM/yyyy")</span></div>
+    <div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Gói tập</th><th>Giao dịch thành công</th><th>Doanh thu</th></tr></thead><tbody>
+    @if (Model.Packages.Count == 0) { <tr><td colspan="3"><div class="empty-state"><h2>Chưa có doanh thu trong kỳ</h2></div></td></tr> }
+    @foreach (var package in Model.Packages) { <tr><td><strong>@package.PackageName</strong></td><td>@package.PaymentCount</td><td>@VndMoney.Format(package.Amount)</td></tr> }
+    </tbody></table></div>
+</section>

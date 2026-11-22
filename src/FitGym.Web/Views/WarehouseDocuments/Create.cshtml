@@ -1,0 +1,9 @@
+@model FitGym.Web.Features.Warehouse.WarehouseDocumentCreateViewModel
+@using FitGym.Application.Features.Warehouse
+@{ ViewData["Title"] = "Lập phiếu kho"; }
+<div class="work-page">
+<div class="page-heading compact work-heading"><div><h1>Lập phiếu kho</h1></div></div>
+<form asp-action="Create" method="post" class="fit-card form-card work-form-card"><div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div><div class="form-grid"><div><label asp-for="LoaiPhieu" class="form-label"></label><select asp-for="LoaiPhieu" class="form-select"><option value="@DocumentTypes.Inbound">Nhập kho</option><option value="@DocumentTypes.Outbound">Xuất kho</option></select></div><div class="full-width"><label asp-for="GhiChu" class="form-label"></label><textarea asp-for="GhiChu" class="form-control" rows="3"></textarea><span asp-validation-for="GhiChu" class="text-danger"></span></div></div><div class="form-actions"><a class="btn btn-outline-secondary" asp-action="Index">Hủy</a><button class="btn btn-fitgym">Tạo bản nháp</button></div></form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+

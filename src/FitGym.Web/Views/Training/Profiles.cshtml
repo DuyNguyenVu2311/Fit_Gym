@@ -1,0 +1,50 @@
+@model FitGym.Web.Features.Training.TrainingProfileIndexViewModel
+@{
+    ViewData["Title"] = "Hồ sơ mục tiêu tập luyện";
+}
+
+<div class="page-heading">
+    <div>
+        <h1>Hồ sơ mục tiêu tập luyện</h1>
+    </div>
+    <a class="btn btn-outline-dark" asp-action="Exercises">Danh mục bài tập</a>
+</div>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input class="form-control" name="search" value="@Model.Search" placeholder="Tìm theo tên hoặc số điện thoại" />
+    </div>
+    <div class="col-auto"><button class="btn btn-dark" type="submit">Tìm kiếm</button></div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead><tr><th>Hội viên</th><th>Mục tiêu</th><th>Lịch dự kiến</th><th>Hồ sơ</th><th></th></tr></thead>
+            <tbody>
+            @if (Model.Profiles.Count == 0)
+            {
+                <tr><td colspan="5" class="text-center text-secondary py-5">Không có hội viên phù hợp.</td></tr>
+            }
+            else
+            {
+                @foreach (var item in Model.Profiles)
+                {
+                    <tr>
+                        <td><strong>@item.HoTen</strong><br /><span class="small text-secondary">@item.TrangThaiHoiVien</span></td>
+                        <td>@(item.MucTieu ?? "Chưa ghi nhận")</td>
+                        <td>@(item.SoNgayTuan is null ? "—" : $"{item.SoNgayTuan} ngày/tuần · {item.SoPhutBuoi} phút/buổi")</td>
+                        <td><span class="badge @(item.MaHoSo is null ? "text-bg-secondary" : "text-bg-success")">@(item.MaHoSo is null ? "Chưa có" : "Đã có")</span></td>
+                        <td class="text-end"><a class="btn btn-sm btn-outline-dark" asp-action="EditProfile" asp-route-memberId="@item.MaHoiVien">@(item.MaHoSo is null ? "Tạo hồ sơ" : "Cập nhật")</a></td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

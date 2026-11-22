@@ -1,0 +1,36 @@
+@model FitGym.Application.Features.Payments.MembershipPaymentItem
+@using FitGym.Application.Features.Registrations
+@using System.Globalization
+@{ ViewData["Title"] = "Chi tiết thanh toán"; }
+<div class="work-page">
+<div class="page-heading work-heading"><div><p class="eyebrow work-code">TT-@Model.PaymentId.ToString("D6")</p><h1>Chi tiết thanh toán</h1></div><a asp-action="Index" class="btn btn-outline-dark">Danh sách giao dịch</a></div>
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+@if (TempData["Success"] is string success) { <div class="alert alert-success" role="status">@success</div> }
+<section class="fit-card detail-card work-detail-card" data-payment-id="@Model.PaymentId" data-amount="@Model.Amount.ToString("F2", CultureInfo.InvariantCulture)">
+    <div class="work-detail-intro"><div><span>Số tiền giao dịch</span><strong class="work-amount">@VndMoney.Format(Model.Amount)</strong></div><partial name="_Status" model="Model.Status" /></div>
+    <div class="detail-grid">
+        <div><span>Hội viên</span><strong><a asp-controller="Members" asp-action="Details" asp-route-id="@Model.MemberId">@Model.MemberName</a></strong></div>
+        <div><span>Gói tập</span><strong>@Model.PackageName</strong></div>
+        <div><span>Đăng ký</span><strong><a asp-controller="Registrations" asp-action="Details" asp-route-id="@Model.RegistrationId">DK-@Model.RegistrationId.ToString("D6")</a></strong></div>
+        <div><span>Phương thức</span><strong>@(Model.Method == PaymentMethods.Cash ? "Tiền mặt tại quầy" : Model.Method == PaymentMethods.Qr ? "QR" : "Chưa xác định")</strong></div>
+        <div><span>Trạng thái</span><strong><partial name="_Status" model="Model.Status" /></strong></div>
+        <div><span>Thời điểm ghi nhận</span><strong>@Model.RecordedAtVietnam.ToString("dd/MM/yyyy HH:mm:ss")</strong></div>
+        <div><span>@(Model.EmployeeName == "Trực tuyến" ? "Nguồn yêu cầu" : Model.Method == PaymentMethods.Qr && Model.Status == PaymentStatuses.Succeeded ? "Nhân viên xác nhận" : "Nhân viên phụ trách")</span><strong>@Model.EmployeeName</strong></div>
+        <div class="full-width"><span>Mã yêu cầu</span><strong class="font-monospace">@Model.RequestCode</strong></div>
+    </div>
+    @if (Model.Method == PaymentMethods.Qr && Model.Status == PaymentStatuses.Pending)
+    {
+        <div class="work-payment-action">
+            <div class="work-qr"><img src="@Url.Action("QrCode", "Payments", new { id = Model.PaymentId })" alt="Mã QR giao dịch TT-@Model.PaymentId.ToString("D6")" width="208" height="208" /><span class="work-code">TT-@Model.PaymentId.ToString("D6")</span></div>
+            <div class="work-payment-check">
+                <h2>Xác nhận giao dịch</h2>
+                <p>Kiểm tra số tiền đã nhận trước khi xác nhận. Gói tập sẽ có hiệu lực sau bước này.</p>
+                <form asp-action="Confirm" asp-route-id="@Model.PaymentId" method="post">
+                    <label class="work-check-row"><input type="checkbox" name="receiptVerified" value="true" class="form-check-input" /><span>Đã nhận đủ @VndMoney.Format(Model.Amount)</span></label>
+                    <button class="btn btn-fitgym" type="submit">Xác nhận thanh toán</button>
+                </form>
+            </div>
+        </div>
+    }
+</section>
+</div>

@@ -1,0 +1,25 @@
+.registration-steps { display:grid;grid-template-columns:repeat(5,minmax(0,1fr));list-style:none;padding:0;margin:0 0 24px;gap:0;background:white;border:1px solid var(--line);border-radius:12px;overflow:hidden; }
+.registration-steps li { padding:18px 14px;display:flex;align-items:center;gap:10px;border-bottom:3px solid transparent;color:var(--muted); }
+.registration-steps li>span { width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--subtle);font-weight:600;font-size:12px;flex:none; }
+.registration-steps li>strong { font-size:12px;font-weight:500; }
+.registration-steps .current { border-bottom-color:var(--accent);color:var(--ink);background:#faf6f2; }.registration-steps .current>span { background:var(--accent);color:#fff; }
+.registration-steps .completed { color:var(--success); }.registration-steps .completed>span { background:#eaf7f0;color:var(--success); }
+.registration-wizard { max-width:100%;padding:0; }
+.registration-wizard [hidden] { display:none!important; }
+.wizard-panel { padding:32px;min-height:310px; }
+.wizard-panel h2 { font-size:19px;font-weight:500;margin:0 0 6px; }.wizard-intro { color:var(--muted);font-size:13px;margin-bottom:24px; }
+.wizard-section-head { border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:22px; }
+.wizard-fields { max-width:780px;display:grid;gap:20px; }.wizard-fields .form-label { font-size:12px; }
+.wizard-fields .form-select,.wizard-fields .form-control { min-height:42px;font-size:14px; }
+.wizard-inline { display:flex;gap:12px;align-items:center;flex-wrap:wrap; }
+.quote-card { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;background:#f8f9f6;border:1px solid var(--line);border-radius:10px;padding:20px;margin-top:20px; }
+.quote-card small { display:block;color:var(--muted);font-size:12px;margin-bottom:5px; }.quote-card strong { font-size:17px;font-weight:600; }
+.capture-unavailable { display:flex;gap:16px;padding:20px;border:1px dashed #bdc5bb;border-radius:8px;background:#f8f9f6; }.capture-unavailable>.icon { width:30px;height:30px;color:var(--muted); }.capture-unavailable strong { display:block;margin-bottom:5px; }.capture-unavailable p { margin:0;font-size:13px;color:var(--muted); }
+.wizard-consent { display:flex;align-items:flex-start;gap:10px;padding:18px;border:1px solid var(--line);border-radius:8px;margin-bottom:16px; }.wizard-consent input { margin-top:3px;width:17px;height:17px;flex:none; }.wizard-consent label { font-size:14px;line-height:1.6;cursor:pointer; }
+.wizard-actions { border-top:1px solid var(--line);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fafbf8; }.wizard-actions>div { display:flex;gap:8px;align-items:center; }.wizard-step-count { color:var(--muted);font-size:12px; }
+.wizard-error { margin:16px 24px 0; }.wizard-nojs { margin:20px 24px 0; }
+.review-summary { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:18px;background:#f8f9f6;border-radius:8px;margin:20px 0; }.review-summary>div { display:flex;flex-direction:column;gap:4px; }.review-summary small { color:var(--muted);font-size:12px; }.review-summary strong { font-size:14px; }
+.result-heading { display:flex;gap:14px;align-items:center;padding:22px 24px;border-bottom:1px solid var(--line); }.result-heading>.icon { width:34px;height:34px;color:var(--success); }.result-heading h2 { font-size:20px;font-weight:500;margin:0 0 5px; }.result-heading p { margin:0;font-size:13px;color:var(--muted); }
+.receipt-actions { display:flex;gap:8px;flex-wrap:wrap;margin-top:24px; }
+@media(max-width:767px){.registration-steps li{padding:12px 5px;flex-direction:column;gap:6px;text-align:center}.registration-steps li>strong{font-size:10px}.registration-steps li>span{width:23px;height:23px}.wizard-panel{padding:20px}.wizard-actions{padding:14px;align-items:flex-start}.wizard-actions>div{flex-wrap:wrap;justify-content:flex-end}.quote-card{grid-template-columns:1fr;padding:16px}.review-summary{grid-template-columns:1fr}.wizard-step-count{display:none}}
+@media print{.ops-sidebar,.ops-topbar,.ops-footer,.registration-steps,.receipt-actions,.page-heading,.alert,.wizard-actions{display:none!important}.ops-workspace{margin:0}.ops-main{padding:0;min-height:0}.fit-card{border:none;box-shadow:none}.detail-card{padding:16px}.result-heading{padding:16px}body.operations-app{background:#fff}}

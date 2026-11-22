@@ -1,0 +1,40 @@
+@model FitGym.Web.Features.Warehouse.GoodsIndexViewModel
+@using FitGym.Application.Features.Warehouse
+@{
+    ViewData["Title"] = "Hàng hóa và tồn kho";
+}
+<div class="work-page">
+    <div class="page-heading work-heading">
+        <div><h1>Hàng hóa và tồn kho</h1></div>
+        <div class="work-heading-actions">
+            <a class="btn btn-outline-dark" asp-controller="WarehouseDocuments" asp-action="Index">Phiếu kho</a>
+            @if (User.IsInRole("QuanLy")) { <a class="btn btn-fitgym" asp-action="Create"><svg class="icon"><use href="#i-plus" /></svg>Thêm hàng hóa</a> }
+        </div>
+    </div>
+    @if (TempData["Success"] is string success) { <div class="alert alert-success">@success</div> }
+    <section class="fit-card work-panel">
+        <form method="get" class="account-toolbar work-toolbar">
+            <div class="work-field work-search-field"><label class="form-label" for="goods-search">Hàng hóa</label><input id="goods-search" name="search" value="@Model.Search" class="form-control" placeholder="Tên hàng hóa" /></div>
+            <div class="work-field work-select-field"><label class="form-label" for="goods-status">Trạng thái</label><select id="goods-status" name="status" class="form-select"><option value="">Tất cả</option><option value="@GoodsStatuses.Active" selected="@(Model.Status == GoodsStatuses.Active)">Đang hoạt động</option><option value="@GoodsStatuses.Inactive" selected="@(Model.Status == GoodsStatuses.Inactive)">Ngừng hoạt động</option></select></div>
+            <button class="btn btn-outline-dark work-filter-button" type="submit">Lọc</button>
+        </form>
+        <div class="collection-header work-list-header"><strong>Danh mục hàng hóa</strong><span>@Model.Goods.Count mặt hàng</span></div>
+        <div class="table-responsive"><table class="table work-table align-middle mb-0">
+            <thead><tr><th>Hàng hóa</th><th>Đơn vị</th><th class="text-end">Giá bán</th><th class="text-end">Tồn kho</th><th>Trạng thái</th><th></th></tr></thead>
+            <tbody>
+            @if (Model.Goods.Count == 0) { <tr><td colspan="6"><div class="empty-state"><h2>Không có hàng hóa phù hợp</h2></div></td></tr> }
+            @foreach (var item in Model.Goods)
+            {
+                <tr>
+                    <td><strong>@item.TenHang</strong></td>
+                    <td>@item.DonViTinh</td>
+                    <td class="text-end work-money">@VndMoney.Format(item.GiaBan)</td>
+                    <td class="text-end work-quantity">@item.TonKho</td>
+                    <td><span class="status-pill @(item.TrangThai == GoodsStatuses.Active ? "active" : "inactive")">@(item.TrangThai == GoodsStatuses.Active ? "Đang hoạt động" : "Ngừng hoạt động")</span></td>
+                    <td class="text-end">@if (User.IsInRole("QuanLy")) { <a class="btn btn-sm btn-outline-dark" asp-action="Edit" asp-route-id="@item.MaHangHoa">Chỉnh sửa</a> }</td>
+                </tr>
+            }
+            </tbody>
+        </table></div>
+    </section>
+</div>

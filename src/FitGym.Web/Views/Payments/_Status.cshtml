@@ -1,0 +1,3 @@
+@model string
+@using FitGym.Application.Features.Registrations
+<span class="status-pill @(Model == PaymentStatuses.Succeeded ? "active" : Model == PaymentStatuses.Failed ? "inactive" : "neutral")">@(Model == PaymentStatuses.Succeeded ? "Đã thanh toán" : Model == PaymentStatuses.Pending ? "Chờ thanh toán" : Model == PaymentStatuses.Failed ? "Thất bại" : "Chưa xác định")</span>

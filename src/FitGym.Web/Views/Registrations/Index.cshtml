@@ -1,0 +1,66 @@
+@model FitGym.Web.Features.Registrations.RegistrationIndexViewModel
+@using FitGym.Application.Features.Registrations
+@{
+    ViewData["Title"] = "Đăng ký và gia hạn";
+    var today = DateTime.Today;
+}
+<div class="work-page">
+    <div class="page-heading work-heading">
+        <div><h1>Đăng ký và gia hạn</h1></div>
+        <a class="btn btn-fitgym" asp-action="Create"><svg class="icon"><use href="#i-plus" /></svg>Đăng ký tại quầy</a>
+    </div>
+    <section class="fit-card work-panel">
+        <form method="get" class="account-toolbar work-toolbar">
+            <div class="work-field work-search-field">
+                <label class="form-label" for="registration-search">Hội viên</label>
+                <input id="registration-search" name="search" value="@Model.Search" class="form-control" placeholder="Tên hoặc số điện thoại" />
+            </div>
+            <div class="work-field work-select-field">
+                <label class="form-label" for="registration-status">Trạng thái</label>
+                <select id="registration-status" name="status" class="form-select">
+                    <option value="">Tất cả</option>
+                    <option value="@RegistrationStatuses.Active" selected="@(Model.Status == RegistrationStatuses.Active)">Đã xác nhận</option>
+                    <option value="@RegistrationStatuses.PendingPayment" selected="@(Model.Status == RegistrationStatuses.PendingPayment)">Chờ thanh toán</option>
+                    <option value="@RegistrationStatuses.Cancelled" selected="@(Model.Status == RegistrationStatuses.Cancelled)">Đã hủy</option>
+                </select>
+            </div>
+            <button class="btn btn-outline-dark work-filter-button" type="submit">Lọc</button>
+        </form>
+        <div class="collection-header work-list-header"><strong>Danh sách đăng ký</strong><span>@Model.Registrations.Count kết quả</span></div>
+        <div class="table-responsive">
+            <table class="table work-table align-middle mb-0">
+                <thead><tr><th>Mã</th><th>Hội viên</th><th>Gói tập</th><th>Thời hạn</th><th class="text-end">Tổng tiền</th><th>Hiệu lực</th><th>Thanh toán</th><th></th></tr></thead>
+                <tbody>
+                @if (Model.Registrations.Count == 0)
+                {
+                    <tr><td colspan="8"><div class="empty-state"><h2>Không có đăng ký phù hợp</h2></div></td></tr>
+                }
+                @foreach (var item in Model.Registrations)
+                {
+                    var validityCode = RegistrationValidity.Evaluate(item.TrangThai, item.NgayBatDau, item.NgayKetThuc,
+                        item.TrangThaiThanhToan == PaymentStatuses.Succeeded, today);
+                    var validity = validityCode switch
+                    {
+                        RegistrationValidity.Cancelled => "Đã hủy",
+                        RegistrationValidity.PaymentUnconfirmed => "Chưa có hiệu lực",
+                        RegistrationValidity.NotStarted => "Chưa bắt đầu",
+                        RegistrationValidity.Expired => "Hết hạn",
+                        _ => "Còn hiệu lực"
+                    };
+                    var validityTone = validity == "Còn hiệu lực" ? "active" : validity == "Hết hạn" ? "warning" : "neutral";
+                    <tr>
+                        <td><a class="work-code" asp-action="Details" asp-route-id="@item.MaDangKy">DK-@item.MaDangKy.ToString("D6")</a></td>
+                        <td><strong>@item.HoTenHoiVien</strong></td>
+                        <td>@item.TenGoi</td>
+                        <td class="text-nowrap"><span>@item.NgayBatDau.ToString("dd/MM/yyyy")</span><span class="work-date-separator">–</span><span>@item.NgayKetThuc.ToString("dd/MM/yyyy")</span></td>
+                        <td class="text-end text-nowrap work-money">@VndMoney.Format(item.TongTien)</td>
+                        <td><span class="status-pill @validityTone">@validity</span></td>
+                        <td><span class="status-pill @(item.TrangThaiThanhToan == PaymentStatuses.Succeeded ? "active" : item.TrangThaiThanhToan == PaymentStatuses.Failed ? "inactive" : "neutral")">@(item.TrangThaiThanhToan == PaymentStatuses.Succeeded ? "Đã thanh toán" : item.TrangThaiThanhToan == PaymentStatuses.Failed ? "Thất bại" : item.TrangThaiThanhToan == PaymentStatuses.Pending ? "Chờ thanh toán" : "Chưa ghi nhận")</span></td>
+                        <td class="text-end"><a class="btn btn-sm btn-outline-dark" asp-action="Details" asp-route-id="@item.MaDangKy">Chi tiết</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,21 @@
+@model FitGym.Web.Features.Registrations.RenewalViewModel
+@using FitGym.Application.Features.Registrations
+@{ ViewData["Title"] = "Gia hạn gói tập"; }
+<div class="work-page">
+<div class="page-heading compact work-heading"><div><p class="eyebrow">Gia hạn gói tập</p><h1>@Model.HoTenHoiVien</h1></div></div>
+<link rel="stylesheet" href="~/css/registration.css" asp-append-version="true" />
+<form asp-action="Renew" method="post" class="fit-card form-card work-form-card" data-renewal-form data-quote-url="@Url.Action("RenewalQuote")">
+    <input asp-for="MaDangKyGoc" type="hidden" /><input asp-for="HoTenHoiVien" type="hidden" />
+    <input asp-for="QuoteToken" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div>
+    <div class="form-grid">
+        <div><label asp-for="MaGoiTap" class="form-label"></label><select asp-for="MaGoiTap" class="form-select">@foreach (var package in Model.Packages) { <option value="@package.MaGoiTap">@package.TenGoi · @package.ThoiHanThang tháng · @VndMoney.Format(package.GiaTien)</option> }</select><span asp-validation-for="MaGoiTap" class="text-danger"></span></div>
+        <div><label asp-for="PhuongThucThanhToan" class="form-label"></label><select asp-for="PhuongThucThanhToan" class="form-select"><option value="@PaymentMethods.Qr">QR</option><option value="@PaymentMethods.Cash">Tiền mặt tại quầy</option></select></div>
+    </div>
+    <div class="quote-card work-quote" aria-live="polite"><div><small>Bắt đầu</small><strong data-renewal-start>—</strong></div><div><small>Kết thúc</small><strong data-renewal-end>—</strong></div><div class="work-quote-total"><small>Tổng thanh toán</small><strong data-renewal-total>—</strong></div></div>
+    <p class="form-hint mt-3" data-renewal-state hidden></p>
+    <div class="consent-box mt-3"><label><input asp-for="CashReceived" class="form-check-input me-2" />Đã nhận đủ tiền mặt nếu chọn thanh toán tiền mặt.</label><span asp-validation-for="CashReceived" class="text-danger d-block"></span><p>Gia hạn bằng QR chờ xác nhận thanh toán.</p></div>
+    <div class="form-actions"><a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.MaDangKyGoc">Hủy</a><button class="btn btn-fitgym" type="submit" data-renewal-submit disabled>Tạo kỳ gia hạn</button></div>
+</form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /><script src="~/js/renewal.js" asp-append-version="true"></script> }

@@ -1,0 +1,55 @@
+@model FitGym.Web.Features.Training.ExerciseIndexViewModel
+@using FitGym.Application.Security
+@{
+    ViewData["Title"] = "Danh mục bài tập";
+}
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h1 class="h3">Danh mục bài tập</h1>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-dark" asp-action="Profiles">Hồ sơ tập luyện</a>
+        @if (User.IsInRole(FitGymRoles.QuanLy))
+        {
+            <a class="btn btn-fitgym" asp-action="CreateExercise">Thêm bài tập</a>
+        }
+    </div>
+</div>
+
+@if (TempData["Success"] is string success)
+{
+    <div class="alert alert-success">@success</div>
+}
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-6"><input class="form-control" name="search" value="@Model.Search" placeholder="Tìm tên bài tập hoặc nhóm cơ" /></div>
+    <div class="col-auto"><button class="btn btn-dark" type="submit">Tìm kiếm</button></div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0">
+            <thead><tr><th>Bài tập</th><th>Nhóm cơ chính</th><th>Video</th><th>AI</th><th></th></tr></thead>
+            <tbody>
+            @if (Model.Exercises.Count == 0)
+            {
+                <tr><td colspan="5" class="text-center text-secondary py-5">Chưa có bài tập nào.</td></tr>
+            }
+            else
+            {
+                @foreach (var item in Model.Exercises)
+                {
+                    <tr>
+                        <td><strong>@item.TenBaiTap</strong><br /><span class="small text-secondary">@item.MoTa</span></td>
+                        <td>@item.NhomCoChinh</td>
+                        <td>@if (item.LinkVideo is not null) { <a href="@item.LinkVideo" target="_blank" rel="noopener noreferrer">Mở hướng dẫn</a> } else { <span>—</span> }</td>
+                        <td>@(item.HoTroAI ? "Có" : "Không")</td>
+                        <td class="text-end">@if (User.IsInRole(FitGymRoles.QuanLy)) { <a class="btn btn-sm btn-outline-dark" asp-action="EditExercise" asp-route-id="@item.MaBaiTap">Sửa</a> }</td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

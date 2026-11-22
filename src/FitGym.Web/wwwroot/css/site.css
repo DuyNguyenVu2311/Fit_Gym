@@ -1,0 +1,212 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #a7441c;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+  background: #f5f5f2;
+  color: #202622;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+.navbar-brand {
+  font-weight: 800;
+  color: #202622 !important;
+}
+
+.page-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.75rem 0 1.25rem;
+}
+
+.page-heading.compact {
+  align-items: start;
+}
+
+.page-heading h1 {
+  margin: 0 0 .35rem;
+  font-weight: 800;
+  letter-spacing: -.025em;
+}
+
+.eyebrow {
+  color: #586779;
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  margin-bottom: .35rem;
+}
+
+.fit-card {
+  background: #fff;
+  border: 1px solid #dee5ee;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, .06);
+  overflow: hidden;
+}
+
+.btn-fitgym {
+  background: #a7441c;
+  border-color: #a7441c;
+  color: #fff;
+  font-weight: 750;
+}
+
+.btn-fitgym:hover,
+.btn-fitgym:focus {
+  background: #843414;
+  border-color: #843414;
+  color: #fff;
+}
+
+.account-toolbar {
+  display: flex;
+  gap: .75rem;
+  padding: 1rem;
+  border-bottom: 1px solid #dee5ee;
+}
+
+.account-toolbar .form-control {
+  max-width: 34rem;
+}
+
+.account-toolbar .filter-select {
+  max-width: 14rem;
+}
+
+.account-toolbar .date-filter { max-width: 12rem; }
+
+.table thead th {
+  background: #f1f4f8;
+  border-bottom-color: #dee5ee;
+  color: #586779;
+  font-size: .75rem;
+  letter-spacing: .04em;
+  padding: .9rem 1rem;
+  text-transform: uppercase;
+}
+
+.table tbody td {
+  border-color: #edf1f6;
+  padding: 1rem;
+}
+
+.status-pill {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: .78rem;
+  font-weight: 700;
+  padding: .32rem .6rem;
+}
+
+.status-pill.active { background: #eaf7f0; color: #147d55; }
+.status-pill.inactive { background: #fdf0f2; color: #c43d4b; }
+.status-pill.neutral { background: #f1f4f8; color: #586779; }
+
+.empty-state {
+  padding: 4rem 1.5rem;
+  text-align: center;
+}
+
+.empty-state h2 { font-size: 1.15rem; font-weight: 750; }
+.empty-state p { color: #586779; margin: .5rem auto 0; max-width: 34rem; }
+
+.form-card {
+  max-width: 58rem;
+  padding: 1.5rem;
+}
+
+.narrow-card { max-width: 38rem; }
+
+.detail-card { padding: 1.5rem; }
+
+.detail-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.detail-grid > div {
+  display: grid;
+  gap: .3rem;
+}
+
+.detail-grid > div > span {
+  color: #586779;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+.detail-grid .full-width { grid-column: 1 / -1; }
+
+.section-title { font-size: 1.05rem; font-weight: 800; margin: 0 0 1rem; }
+
+.form-grid {
+  display: grid;
+  gap: 1.15rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-grid .full-width { grid-column: 1 / -1; }
+.form-label { font-weight: 700; }
+.form-hint { color: #586779; font-size: .82rem; margin-top: .35rem; }
+.validation-summary:empty { display: none; }
+
+.consent-box {
+  background: #f6f8fc;
+  border: 1px solid #dee5ee;
+  border-radius: .75rem;
+  padding: 1rem;
+}
+
+.consent-box label { font-weight: 700; }
+.consent-box p { color: #586779; font-size: .82rem; margin: .5rem 0 0 1.65rem; }
+
+.form-actions {
+  border-top: 1px solid #dee5ee;
+  display: flex;
+  justify-content: flex-end;
+  gap: .75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+}
+
+@media (max-width: 767px) {
+  .page-heading { align-items: stretch; flex-direction: column; }
+  .account-toolbar { align-items: stretch; flex-direction: column; }
+  .account-toolbar .form-control { max-width: none; }
+  .account-toolbar .filter-select { max-width: none; }
+  .account-toolbar .date-filter { max-width: none; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-grid .full-width { grid-column: auto; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .detail-grid .full-width { grid-column: auto; }
+}

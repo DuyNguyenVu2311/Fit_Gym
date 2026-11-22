@@ -1,0 +1,8 @@
+@model FitGym.Web.Models.OperationsDashboardViewModel
+@{ ViewData["Title"] = "Tổng quan vận hành"; }
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <span class="small text-danger d-none" data-dashboard-status role="status"></span>
+    <button class="btn btn-sm btn-outline-dark" type="button" data-dashboard-refresh>Làm mới dữ liệu</button>
+</div>
+<div data-dashboard-host data-url="@Url.Action("Snapshot")"><partial name="_OperationsSnapshot" model="Model" /></div>
+@section Scripts { <script src="~/js/dashboard-refresh.js" asp-append-version="true"></script> }

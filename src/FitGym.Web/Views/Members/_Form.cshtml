@@ -1,0 +1,16 @@
+@model FitGym.Web.Features.Members.MemberFormViewModel
+@using FitGym.Application.Features.Members
+<div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div>
+<div class="form-grid">
+    <div><label asp-for="HoTen" class="form-label"></label><input asp-for="HoTen" class="form-control" /><span asp-validation-for="HoTen" class="text-danger"></span></div>
+    <div><label asp-for="SoDienThoai" class="form-label"></label><input asp-for="SoDienThoai" class="form-control" /><span asp-validation-for="SoDienThoai" class="text-danger"></span></div>
+    <div><label asp-for="NgaySinh" class="form-label"></label><input asp-for="NgaySinh" class="form-control" /><span asp-validation-for="NgaySinh" class="text-danger"></span></div>
+    <div><label asp-for="GioiTinh" class="form-label"></label><input asp-for="GioiTinh" class="form-control" /><span asp-validation-for="GioiTinh" class="text-danger"></span></div>
+    <div class="full-width"><label asp-for="DiaChi" class="form-label"></label><input asp-for="DiaChi" class="form-control" /><span asp-validation-for="DiaChi" class="text-danger"></span></div>
+    <div><label asp-for="NgayThamGia" class="form-label"></label><input asp-for="NgayThamGia" class="form-control" /><span asp-validation-for="NgayThamGia" class="text-danger"></span></div>
+    @if (Model.MaHoiVien > 0)
+    {
+        <div><label asp-for="TrangThai" class="form-label"></label><select asp-for="TrangThai" class="form-select"><option value="@MemberStatuses.Active">Đang hoạt động</option><option value="@MemberStatuses.Inactive">Ngừng hoạt động</option></select></div>
+    }
+</div>
+

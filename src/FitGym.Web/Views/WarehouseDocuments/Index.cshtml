@@ -1,0 +1,38 @@
+@model FitGym.Web.Features.Warehouse.WarehouseDocumentIndexViewModel
+@using FitGym.Application.Features.Warehouse
+@{
+    ViewData["Title"] = "Phiếu kho";
+}
+<div class="work-page">
+    <div class="page-heading work-heading">
+        <div><h1>Phiếu nhập và xuất kho</h1></div>
+        <a class="btn btn-fitgym" asp-action="Create"><svg class="icon"><use href="#i-plus" /></svg>Lập phiếu</a>
+    </div>
+    <section class="fit-card work-panel">
+        <form method="get" class="account-toolbar work-toolbar">
+            <div class="work-field work-select-field"><label class="form-label" for="document-type">Loại phiếu</label><select id="document-type" name="type" class="form-select"><option value="">Tất cả</option><option value="@DocumentTypes.Inbound" selected="@(Model.Type == DocumentTypes.Inbound)">Phiếu nhập</option><option value="@DocumentTypes.Outbound" selected="@(Model.Type == DocumentTypes.Outbound)">Phiếu xuất</option></select></div>
+            <div class="work-field work-select-field"><label class="form-label" for="document-status">Trạng thái</label><select id="document-status" name="status" class="form-select"><option value="">Tất cả</option><option value="@DocumentStatuses.Draft" selected="@(Model.Status == DocumentStatuses.Draft)">Bản nháp</option><option value="@DocumentStatuses.Confirmed" selected="@(Model.Status == DocumentStatuses.Confirmed)">Đã xác nhận</option></select></div>
+            <button class="btn btn-outline-dark work-filter-button" type="submit">Lọc</button>
+            <a class="btn btn-outline-secondary work-filter-button" asp-controller="Goods" asp-action="Index">Hàng hóa</a>
+        </form>
+        <div class="collection-header work-list-header"><strong>Danh sách phiếu</strong><span>@Model.Documents.Count phiếu</span></div>
+        <div class="table-responsive"><table class="table work-table align-middle mb-0">
+            <thead><tr><th>Mã phiếu</th><th>Loại</th><th>Ngày lập</th><th class="text-end">Số dòng</th><th class="text-end">Tổng giá trị</th><th>Trạng thái</th><th></th></tr></thead>
+            <tbody>
+            @if (Model.Documents.Count == 0) { <tr><td colspan="7"><div class="empty-state"><h2>Chưa có phiếu phù hợp</h2></div></td></tr> }
+            @foreach (var item in Model.Documents)
+            {
+                <tr>
+                    <td><a class="work-code" asp-action="Details" asp-route-id="@item.MaPhieu">PK-@item.MaPhieu.ToString("D6")</a></td>
+                    <td>@(item.LoaiPhieu == DocumentTypes.Inbound ? "Nhập kho" : "Xuất kho")</td>
+                    <td class="text-nowrap">@item.NgayLap.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td class="text-end work-quantity">@item.SoDong</td>
+                    <td class="text-end work-money">@VndMoney.Format(item.TongGiaTri)</td>
+                    <td><span class="status-pill @(item.TrangThai == DocumentStatuses.Confirmed ? "active" : "neutral")">@(item.TrangThai == DocumentStatuses.Confirmed ? "Đã xác nhận" : "Bản nháp")</span></td>
+                    <td class="text-end"><a class="btn btn-sm btn-outline-dark" asp-action="Details" asp-route-id="@item.MaPhieu">Chi tiết</a></td>
+                </tr>
+            }
+            </tbody>
+        </table></div>
+    </section>
+</div>

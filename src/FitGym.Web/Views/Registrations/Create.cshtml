@@ -1,0 +1,48 @@
+@model FitGym.Web.Features.Registrations.RegistrationCreateViewModel
+@using FitGym.Application.Features.Registrations
+@{ ViewData["Title"] = "Đăng ký hội viên tại quầy"; }
+<link rel="stylesheet" href="~/css/registration.css" asp-append-version="true" />
+<div class="page-heading"><div><h1>Đăng ký hội viên & gói tập</h1></div><a class="btn btn-outline-dark" asp-action="Index">Danh sách đăng ký</a></div>
+<partial name="_Steps" model="1" />
+<form asp-action="Create" method="post" class="fit-card registration-wizard" data-registration-wizard data-quote-url="@Url.Action("Quote")" novalidate>
+    <input asp-for="QuoteToken" type="hidden" />
+    <noscript><div class="alert alert-warning wizard-nojs">Vui lòng bật JavaScript để sử dụng quy trình đăng ký từng bước.</div></noscript>
+    <div asp-validation-summary="All" class="text-danger validation-summary p-3"></div>
+    <div class="alert alert-danger wizard-error" data-wizard-error role="alert" hidden></div>
+    <section class="wizard-panel" data-wizard-panel="1" aria-labelledby="wizard-title-1">
+        <div class="wizard-section-head"><h2 id="wizard-title-1">1. Xác định hội viên</h2></div>
+        <div class="wizard-fields">
+            <div><label asp-for="MaHoiVien" class="form-label"></label><select asp-for="MaHoiVien" class="form-select" required><option value="">Chọn hội viên đang hoạt động</option>@foreach (var member in Model.Members) { <option value="@member.MaHoiVien">@member.HoTen · @member.SoDienThoai</option> }</select><span asp-validation-for="MaHoiVien" class="text-danger"></span></div>
+            <div class="wizard-inline"><span class="text-secondary">Hội viên chưa có hồ sơ?</span><a class="btn btn-outline-dark" asp-controller="Members" asp-action="Create" asp-route-returnToRegistration="true"><svg class="icon"><use href="#i-plus" /></svg>Tạo hồ sơ mới</a></div>
+            @if (Model.Members.Count == 0) { <div class="alert alert-info mb-0">Chưa có hội viên đang hoạt động. Tạo hồ sơ mới để tiếp tục đăng ký.</div> }
+        </div>
+    </section>
+    <section class="wizard-panel" data-wizard-panel="2" aria-labelledby="wizard-title-2" hidden>
+        <div class="wizard-section-head"><h2 id="wizard-title-2">2. Chọn gói tập & thời hạn</h2></div>
+        <div class="form-grid">
+            <div><label asp-for="MaGoiTap" class="form-label"></label><select asp-for="MaGoiTap" class="form-select" required><option value="">Chọn gói tập</option>@foreach (var package in Model.Packages) { <option value="@package.MaGoiTap">@package.TenGoi · @package.ThoiHanThang tháng · @VndMoney.Format(package.GiaTien)</option> }</select><span asp-validation-for="MaGoiTap" class="text-danger"></span></div>
+            <div><label asp-for="NgayBatDau" class="form-label"></label><input asp-for="NgayBatDau" type="date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" required /><span asp-validation-for="NgayBatDau" class="text-danger"></span></div>
+        </div>
+        <div class="quote-card" aria-live="polite"><div><small>Gói đã chọn</small><strong data-quote-name>Chưa chọn</strong></div><div><small>Ngày kết thúc</small><strong data-quote-end>—</strong></div><div><small>Tổng thanh toán</small><strong data-quote-total>—</strong></div></div>
+        <p class="form-hint mt-3" data-quote-state hidden></p>
+        @if (Model.Packages.Count == 0) { <div class="alert alert-warning">Chưa có gói tập đang cung cấp. Quản lý cần tạo gói trước khi đăng ký.</div> }
+    </section>
+    <section class="wizard-panel" data-wizard-panel="3" aria-labelledby="wizard-title-3" hidden>
+        <div class="wizard-section-head"><h2 id="wizard-title-3">3. Đồng ý sử dụng khuôn mặt</h2></div>
+        <div class="wizard-consent"><input asp-for="DongYSinhTracHoc" class="form-check-input" /><label asp-for="DongYSinhTracHoc">Tôi xác nhận đã giải thích mục đích sử dụng khuôn mặt để check-in và nhận được sự đồng ý của hội viên.</label></div>
+        <div class="capture-unavailable"><svg class="icon"><use href="#i-camera" /></svg><div><strong>Chưa thể thu nhận khuôn mặt</strong><p>Cần bổ sung dữ liệu khuôn mặt trước khi hội viên sử dụng cổng vào.</p></div></div>
+    </section>
+    <section class="wizard-panel" data-wizard-panel="4" aria-labelledby="wizard-title-4" hidden>
+        <div class="wizard-section-head"><h2 id="wizard-title-4">4. Kiểm tra & thanh toán</h2></div>
+        <div class="review-summary"><div><small>Hội viên</small><strong data-review-member>—</strong></div><div><small>Gói tập</small><strong data-review-package>—</strong></div><div><small>Thời hạn</small><strong data-review-dates>—</strong></div><div><small>Số tiền</small><strong data-review-total>—</strong></div></div>
+        <div class="wizard-fields"><div><label asp-for="PhuongThucThanhToan" class="form-label"></label><select asp-for="PhuongThucThanhToan" class="form-select"><option value="@PaymentMethods.Cash">Tiền mặt tại quầy</option><option value="@PaymentMethods.Qr">QR — chờ thanh toán</option></select></div>
+            <div data-cash-confirmation class="wizard-consent"><input asp-for="CashReceived" class="form-check-input" /><label asp-for="CashReceived">Nhân viên xác nhận đã nhận đủ tiền mặt theo số tiền ở trên.</label></div>
+            <div class="alert alert-info" data-qr-information hidden>Gói tập có hiệu lực sau khi xác nhận thanh toán.</div>
+        </div>
+    </section>
+    <div class="wizard-actions"><span class="wizard-step-count" data-wizard-counter>Bước 1 / 5</span><div><button class="btn btn-outline-dark" type="button" data-wizard-previous hidden>Quay lại</button><a class="btn btn-outline-dark" asp-action="Index">Hủy</a><button class="btn btn-fitgym" type="button" data-wizard-next>Tiếp tục: Chọn gói tập<svg class="icon"><use href="#i-arrow" /></svg></button><button class="btn btn-fitgym" type="submit" data-wizard-submit hidden>Xác nhận thanh toán tiền mặt</button></div></div>
+</form>
+@section Scripts {
+    <script src="~/js/registration-flow.js" asp-append-version="true"></script>
+    <script src="~/js/registration-wizard.js" asp-append-version="true"></script>
+}

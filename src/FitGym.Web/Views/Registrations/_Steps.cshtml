@@ -1,0 +1,11 @@
+@model int
+@{
+    var labels = new[] { "Hội viên", "Gói tập & thời hạn", "Đồng ý khuôn mặt", "Thanh toán", "Kết quả" };
+}
+<ol class="registration-steps" aria-label="Các bước đăng ký">
+    @for (var index = 0; index < labels.Length; index++)
+    {
+        var step = index + 1;
+        <li class="@(step == Model ? "current" : step < Model ? "completed" : "")" data-step-indicator="@step" aria-current="@(step == Model ? "step" : null)"><span>@step</span><strong>@labels[index]</strong></li>
+    }
+</ol>

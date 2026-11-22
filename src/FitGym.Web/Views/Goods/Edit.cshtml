@@ -1,0 +1,8 @@
+@model FitGym.Web.Features.Warehouse.GoodsFormViewModel
+@{ ViewData["Title"] = "Chỉnh sửa hàng hóa"; }
+<div class="work-page">
+<div class="page-heading compact work-heading"><div><h1>Chỉnh sửa @Model.TenHang</h1></div></div>
+<form asp-action="Edit" method="post" class="fit-card form-card work-form-card"><input asp-for="MaHangHoa" type="hidden" /><partial name="_Form" model="Model" /><div class="form-actions"><a class="btn btn-outline-secondary" asp-action="Index">Hủy</a><button class="btn btn-fitgym">Lưu thay đổi</button></div></form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+

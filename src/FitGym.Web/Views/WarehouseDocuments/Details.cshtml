@@ -1,0 +1,60 @@
+@model FitGym.Web.Features.Warehouse.WarehouseDocumentDetailsViewModel
+@using FitGym.Application.Features.Warehouse
+@{
+    ViewData["Title"] = "Chi tiết phiếu kho";
+    var document = Model.Document;
+    var isDraft = document.TrangThai == DocumentStatuses.Draft;
+}
+<div class="work-page">
+    <div class="page-heading work-heading">
+        <div>
+            <p class="eyebrow work-code">PK-@document.MaPhieu.ToString("D6")</p>
+            <h1>@(document.LoaiPhieu == DocumentTypes.Inbound ? "Phiếu nhập kho" : "Phiếu xuất kho")</h1>
+            <p>@document.NgayLap.ToString("dd/MM/yyyy HH:mm")@if (!string.IsNullOrWhiteSpace(document.GhiChu)) { <span> · @document.GhiChu</span> }</p>
+        </div>
+        <div class="work-heading-actions"><span class="status-pill @(isDraft ? "neutral" : "active")">@(isDraft ? "Bản nháp" : "Đã xác nhận")</span><a class="btn btn-outline-dark" asp-action="Index">Danh sách</a></div>
+    </div>
+    @if (TempData["Success"] is string success) { <div class="alert alert-success">@success</div> }
+    @if (TempData["Error"] is string error) { <div class="alert alert-danger">@error</div> }
+    @if (isDraft)
+    {
+        <form asp-action="AddLine" method="post" class="fit-card form-card work-form-card work-line-form">
+            <input type="hidden" name="MaPhieu" value="@document.MaPhieu" />
+            <h2 class="section-title">Dòng hàng</h2>
+            <div class="form-grid">
+                <div><label class="form-label" for="line-goods">Hàng hóa</label><select id="line-goods" name="MaHangHoa" class="form-select"><option value="0">Chọn hàng hóa</option>@foreach (var item in Model.AvailableGoods) { <option value="@item.MaHangHoa">@item.TenHang · tồn @item.TonKho @item.DonViTinh</option> }</select></div>
+                <div><label class="form-label" for="line-quantity">Số lượng</label><input id="line-quantity" name="SoLuong" type="number" min="1" value="1" class="form-control" /></div>
+                <div><label class="form-label" for="line-price">Đơn giá (VND)</label><input id="line-price" name="DonGia" type="number" min="0" step="1000" value="0" class="form-control" /></div>
+            </div>
+            <div class="form-actions"><button class="btn btn-outline-dark" type="submit">Lưu dòng hàng</button></div>
+        </form>
+    }
+    <section class="fit-card work-panel">
+        <div class="collection-header work-list-header"><strong>Hàng hóa trong phiếu</strong><span>@document.Lines.Count dòng</span></div>
+        <div class="table-responsive"><table class="table work-table align-middle mb-0">
+            <thead><tr><th>Hàng hóa</th><th class="text-end">Số lượng</th><th class="text-end">Đơn giá</th><th class="text-end">Thành tiền</th><th></th></tr></thead>
+            <tbody>
+            @if (document.Lines.Count == 0) { <tr><td colspan="5"><div class="empty-state"><h2>Phiếu chưa có dòng hàng</h2></div></td></tr> }
+            @foreach (var line in document.Lines)
+            {
+                <tr>
+                    <td><strong>@line.TenHang</strong><div class="small text-secondary">@line.DonViTinh</div></td>
+                    <td class="text-end work-quantity">@line.SoLuong</td>
+                    <td class="text-end work-money">@VndMoney.Format(line.DonGia)</td>
+                    <td class="text-end work-money">@VndMoney.Format(line.ThanhTien)</td>
+                    <td class="text-end">@if (isDraft) { <form asp-action="RemoveLine" method="post" class="d-inline"><input type="hidden" name="id" value="@document.MaPhieu" /><input type="hidden" name="lineId" value="@line.MaChiTiet" /><button class="btn btn-sm btn-outline-danger" type="submit">Xóa</button></form> }</td>
+                </tr>
+            }
+            </tbody>
+            <tfoot><tr><th colspan="3">Tổng giá trị</th><th class="text-end work-money">@VndMoney.Format(document.TongGiaTri)</th><th></th></tr></tfoot>
+        </table></div>
+    </section>
+    @if (isDraft)
+    {
+        <div class="work-document-confirm"><span>@(document.Lines.Count == 0 ? "Thêm hàng hóa trước khi xác nhận phiếu" : "Số tồn chỉ thay đổi sau khi xác nhận phiếu")</span><form asp-action="Confirm" method="post"><input type="hidden" name="id" value="@document.MaPhieu" /><button class="btn btn-fitgym" type="submit" disabled="@(document.Lines.Count == 0)">Xác nhận phiếu</button></form></div>
+    }
+    else
+    {
+        <div class="work-confirmed">Đã xác nhận @document.NgayXacNhan?.ToString("dd/MM/yyyy HH:mm")</div>
+    }
+</div>
